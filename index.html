@@ -11,448 +11,354 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg0: #060e18;
-    --bg1: #0b1625;
-    --bg2: #0f1e30;
-    --bg3: #152438;
-    --line: #1a3050;
-    --line2: #0e1e30;
-    --blue: #3a9eff;
-    --blue-dim: #1a4a80;
-    --green: #00e676;
-    --green-dim: #00552a;
-    --green-bg: #021a0e;
-    --red: #ff4d6a;
-    --red-dim: #6a1020;
-    --red-bg: #1a0208;
-    --gold: #ffd54f;
-    --gold-bg: #1a1200;
-    --text: #d0dce8;
-    --text-dim: #5a7a98;
-    --text-faint: #2a4a68;
-    --mono: 'JetBrains Mono', monospace;
-    --sans: 'Barlow Condensed', sans-serif;
-    --safe-top: env(safe-area-inset-top, 0px);
-    --safe-bottom: env(safe-area-inset-bottom, 0px);
-  }
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-  html { background: var(--bg0); height: 100%; }
+:root {
+  --bg0:#060e18; --bg1:#0b1625; --bg2:#0f1e30; --bg3:#152438;
+  --line:#1a3050; --line2:#0e1e2a;
+  --blue:#3a9eff; --blue-dim:#1a4a80;
+  --green:#00e676; --green-mid:#00c060; --green-bg:#021a0e; --green-bdr:#00552a;
+  --red:#ff4d6a;  --red-mid:#dd3355;   --red-bg:#1a0208;   --red-bdr:#551020;
+  --gold:#ffd54f; --gold-bg:#1a1200;   --gold-bdr:#5a4800;
+  --cyan:#67e8f9; --amber:#ff9f4a; --purple:#c084fc;
+  --text:#d0dce8; --text-dim:#5a7a98; --text-faint:#2a4a68;
+  --mono:'JetBrains Mono',monospace; --sans:'Barlow Condensed',sans-serif;
+  --safe-top:env(safe-area-inset-top,0px); --safe-bottom:env(safe-area-inset-bottom,0px);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{background:var(--bg0);height:100%}
+body{font-family:var(--mono);background:var(--bg0);color:var(--text);min-height:100vh;
+  padding-bottom:calc(20px + var(--safe-bottom));overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:linear-gradient(var(--line2) 1px,transparent 1px),
+    linear-gradient(90deg,var(--line2) 1px,transparent 1px);
+  background-size:44px 44px;opacity:0.35}
 
-  body {
-    font-family: var(--mono);
-    background: var(--bg0);
-    color: var(--text);
-    min-height: 100vh;
-    padding-bottom: calc(20px + var(--safe-bottom));
-    overflow-x: hidden;
-  }
+/* ── HEADER ── */
+.header{position:sticky;top:0;z-index:100;background:rgba(6,14,24,0.97);
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--line);
+  padding:calc(var(--safe-top) + 10px) 16px 0}
+.header-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px}
+.brand-name{font-family:var(--sans);font-size:17px;font-weight:700;
+  letter-spacing:.15em;text-transform:uppercase;color:var(--blue)}
+.brand-sub{font-family:var(--sans);font-size:10px;color:var(--text-dim);letter-spacing:.07em;margin-top:1px}
+.t-badge{text-align:right;font-family:var(--sans)}
+.t-badge .tl{font-size:9px;color:var(--text-faint);letter-spacing:.1em;text-transform:uppercase}
+.t-badge .tv{font-size:13px;font-weight:600;color:var(--text-dim)}
 
-  /* Subtle grid texture */
-  body::before {
-    content:'';
-    position:fixed; inset:0; pointer-events:none; z-index:0;
-    background-image:
-      linear-gradient(var(--line2) 1px, transparent 1px),
-      linear-gradient(90deg, var(--line2) 1px, transparent 1px);
-    background-size: 40px 40px;
-    opacity: 0.4;
-  }
+/* Price cards */
+.price-cards{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+.pc{border-radius:11px;padding:9px 12px;position:relative;overflow:hidden;transition:transform .15s}
+.pc::after{content:'';position:absolute;top:0;left:0;right:0;height:1px}
+.pc.call{background:var(--green-bg);border:1px solid var(--green-bdr)}
+.pc.call::after{background:linear-gradient(90deg,transparent,var(--green),transparent)}
+.pc.put{background:var(--red-bg);border:1px solid var(--red-bdr)}
+.pc.put::after{background:linear-gradient(90deg,transparent,var(--red),transparent)}
+.pc-label{font-family:var(--sans);font-size:10px;font-weight:700;
+  letter-spacing:.18em;text-transform:uppercase;margin-bottom:3px}
+.call .pc-label{color:#00a855} .put .pc-label{color:#cc3355}
+.pc-price{font-size:24px;font-weight:700;line-height:1;transition:all .2s}
+.call .pc-price{color:var(--green)} .put .pc-price{color:var(--red)}
+.pc-delta{font-size:11px;margin-top:3px}
+.call .pc-delta{color:#007a40} .put .pc-delta{color:#882030}
+.pc-itm{position:absolute;top:7px;right:9px;font-family:var(--sans);
+  font-size:10px;font-weight:700;letter-spacing:.1em;padding:2px 7px;border-radius:20px}
+.itm-c{background:#003a1a;color:var(--green);border:1px solid #005a28}
+.itm-p{background:#3a0010;color:var(--red);border:1px solid #6a0020}
+.atm-b{background:#3a2e00;color:var(--gold);border:1px solid var(--gold-bdr)}
 
-  /* ── HEADER ────────────────────────────── */
-  .header {
-    position: sticky; top: 0; z-index: 100;
-    background: rgba(6,14,24,0.96);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border-bottom: 1px solid var(--line);
-    padding: calc(var(--safe-top) + 12px) 16px 0;
-  }
+/* Tabs */
+.tabs{display:flex;margin:0 -16px;overflow-x:auto;scrollbar-width:none;
+  border-top:1px solid var(--line)}
+.tabs::-webkit-scrollbar{display:none}
+.tab-btn{flex:0 0 auto;background:none;border:none;cursor:pointer;
+  font-family:var(--sans);font-size:11px;font-weight:700;letter-spacing:.1em;
+  text-transform:uppercase;padding:9px 16px;color:var(--text-faint);
+  border-bottom:2px solid transparent;white-space:nowrap;transition:all .2s}
+.tab-btn.active{color:var(--blue);border-bottom-color:var(--blue)}
 
-  .header-top {
-    display: flex; align-items: flex-start; justify-content: space-between;
-    margin-bottom: 12px;
-  }
+/* ── INPUTS ── */
+.inputs-wrap{padding:12px 16px 8px;border-bottom:1px solid var(--line);position:relative;z-index:1}
+.inputs-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+.ig{} 
+.ilabel{font-family:var(--sans);font-size:9px;font-weight:700;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--text-dim);display:block;margin-bottom:4px;text-align:center}
+.ifield{width:100%;background:var(--bg2);border:1px solid var(--line);
+  border-radius:9px;padding:9px 6px;color:var(--text);font-family:var(--mono);
+  font-size:15px;font-weight:600;text-align:center;outline:none;
+  -webkit-appearance:none;transition:border-color .2s,background .2s,box-shadow .2s}
+.ifield:focus{border-color:var(--blue);background:#0d2040;
+  box-shadow:0 0 0 3px rgba(58,158,255,.12)}
+.t-hint{text-align:center;font-size:10px;color:var(--text-faint);margin-top:6px;
+  font-family:var(--sans);letter-spacing:.04em}
 
-  .brand { line-height: 1; }
-  .brand-name {
-    font-family: var(--sans); font-size: 18px; font-weight: 700;
-    letter-spacing: 0.15em; text-transform: uppercase;
-    color: var(--blue);
-  }
-  .brand-sub {
-    font-family: var(--sans); font-size: 11px; font-weight: 400;
-    color: var(--text-dim); letter-spacing: 0.08em; margin-top: 2px;
-  }
+/* ── PANELS ── */
+.panel{padding:12px 12px 40px;position:relative;z-index:1;animation:fadeUp .2s ease}
+.panel.hidden{display:none}
+@keyframes fadeUp{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+.no-data{text-align:center;padding:40px 16px;font-family:var(--sans);
+  font-size:14px;color:var(--text-faint);letter-spacing:.05em}
 
-  .t-badge {
-    text-align: right;
-    font-family: var(--sans);
-  }
-  .t-badge .label { font-size: 10px; color: var(--text-faint); letter-spacing: 0.1em; text-transform: uppercase; }
-  .t-badge .value { font-size: 14px; font-weight: 600; color: var(--text-dim); margin-top: 1px; }
+/* ── TABLA ── */
+.var-table{width:100%;border:1px solid var(--line);border-radius:13px;overflow:hidden}
+.th-row{display:grid;grid-template-columns:54px 1fr 1fr 1fr;background:var(--bg2);
+  border-bottom:1px solid var(--line)}
+.th-cell{font-family:var(--sans);font-size:11px;font-weight:700;letter-spacing:.12em;
+  text-transform:uppercase;padding:9px 7px;border-right:1px solid var(--line)}
+.th-cell:last-child{border-right:none}
+.th-cell.tc{text-align:center;color:var(--text-dim)}
+.th-cell.tp{text-align:right;color:var(--blue)}
+.th-cell.tca{text-align:right;color:var(--green)}
+.th-cell.tpu{text-align:right;color:var(--red)}
+.tr{display:grid;grid-template-columns:54px 1fr 1fr 1fr;
+  border-bottom:1px solid var(--line2)}
+.tr:last-child{border-bottom:none}
+.tr.rn{background:rgba(14,8,8,.65)}
+.tr.rp{background:rgba(5,12,8,.65)}
+.tr.rb{background:rgba(18,14,0,.85);box-shadow:inset 0 0 0 1px rgba(255,213,79,.12)}
+.td{padding:8px 7px;border-right:1px solid var(--line2);display:flex;align-items:center}
+.td:last-child{border-right:none}
+.td.tc-pct{justify-content:center}
+.td.tc-num{justify-content:flex-end}
+.pct-pill{font-family:var(--sans);font-size:12px;font-weight:700;
+  padding:3px 5px;border-radius:6px;text-align:center;width:100%;letter-spacing:.04em}
+.pct-dot{width:4px;height:4px;border-radius:50%;margin:0 auto;opacity:.2}
+.nv{font-size:13px;font-weight:600;font-family:var(--mono);text-align:right}
+.nv.dim{color:var(--text-dim)} .nv.base{color:var(--gold);font-weight:700}
+.nv.cv{color:#00c060} .nv.pv{color:#cc4455}
+.nv.cbv{color:var(--green);font-weight:700} .nv.pbv{color:var(--red);font-weight:700}
+.tbl-note{text-align:center;font-size:10px;color:var(--text-faint);
+  font-family:var(--sans);margin-top:8px}
 
-  /* Price cards */
-  .price-cards {
-    display: grid; grid-template-columns: 1fr 1fr;
-    gap: 8px; margin-bottom: 12px;
-  }
-  .price-card {
-    border-radius: 12px;
-    padding: 10px 14px;
-    position: relative; overflow: hidden;
-    transition: transform 0.15s;
-  }
-  .price-card::after {
-    content:''; position:absolute; top:0; left:0; right:0; height:1px;
-  }
-  .price-card.call {
-    background: var(--green-bg);
-    border: 1px solid #00552a;
-  }
-  .price-card.call::after { background: linear-gradient(90deg, transparent, var(--green), transparent); }
-  .price-card.put {
-    background: var(--red-bg);
-    border: 1px solid #551020;
-  }
-  .price-card.put::after { background: linear-gradient(90deg, transparent, var(--red), transparent); }
+/* ── CHART ── */
+.chart-wrap{background:var(--bg1);border:1px solid var(--line);
+  border-radius:13px;overflow:hidden;margin-bottom:12px}
+.chart-title{font-family:var(--sans);font-size:11px;font-weight:700;
+  letter-spacing:.12em;text-transform:uppercase;color:var(--text-dim);
+  padding:10px 14px 0}
+.chart-legend{display:flex;gap:14px;padding:6px 14px;flex-wrap:wrap}
+.leg-item{display:flex;align-items:center;gap:5px;font-family:var(--sans);
+  font-size:11px;font-weight:600;letter-spacing:.06em}
+.leg-dot{width:10px;height:3px;border-radius:2px}
+.chart-svg-wrap{padding:4px 6px 10px}
+svg.chart{width:100%;display:block;overflow:visible}
 
-  .card-label {
-    font-family: var(--sans); font-size: 11px; font-weight: 700;
-    letter-spacing: 0.18em; text-transform: uppercase; margin-bottom: 4px;
-  }
-  .call .card-label { color: #00a855; }
-  .put  .card-label { color: #cc3355; }
+/* ── GREEKS ── */
+.greek-cards{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.gcard{border-radius:11px;padding:11px 14px;border:1px solid var(--line);
+  background:var(--bg2);text-align:center}
+.gcard.gc{border-color:var(--green-bdr);background:var(--green-bg)}
+.gcard.gp{border-color:var(--red-bdr);background:var(--red-bg)}
+.gc-label{font-family:var(--sans);font-size:10px;font-weight:700;
+  letter-spacing:.14em;text-transform:uppercase;margin-bottom:5px}
+.gc .gc-label{color:#00a855} .gp .gc-label{color:#cc3355}
+.gc-price{font-size:21px;font-weight:700;line-height:1}
+.gc .gc-price{color:var(--green)} .gp .gc-price{color:var(--red)}
+.gc-badge{font-family:var(--sans);font-size:10px;font-weight:700;
+  letter-spacing:.1em;display:inline-block;padding:2px 9px;
+  border-radius:20px;margin-top:6px}
+.greek-list{background:var(--bg1);border:1px solid var(--line);
+  border-radius:13px;overflow:hidden}
+.gr-row{display:flex;justify-content:space-between;align-items:center;
+  padding:11px 16px;border-bottom:1px solid var(--line2)}
+.gr-row:last-child{border-bottom:none}
+.gr-key{font-family:var(--sans);font-size:13px;font-weight:600;color:var(--text-dim)}
+.gr-key span{color:var(--text-faint);font-size:11px;margin-left:4px}
+.gr-val{font-size:15px;font-weight:700}
 
-  .card-price {
-    font-size: 26px; font-weight: 700; line-height: 1;
-    transition: all 0.2s ease;
-  }
-  .call .card-price { color: var(--green); }
-  .put  .card-price { color: var(--red); }
+/* ── PAYOFF PANEL ── */
+.po-inputs{background:var(--bg1);border:1px solid var(--line);
+  border-radius:13px;padding:12px;margin-bottom:12px}
+.po-title{font-family:var(--sans);font-size:11px;font-weight:700;
+  letter-spacing:.12em;text-transform:uppercase;color:var(--text-dim);
+  margin-bottom:10px}
+.po-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.po-grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:8px}
+.seg{display:grid;grid-template-columns:1fr 1fr;gap:0;
+  border:1px solid var(--line);border-radius:9px;overflow:hidden;margin-top:8px}
+.seg-btn{background:none;border:none;cursor:pointer;font-family:var(--sans);
+  font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  padding:9px 0;color:var(--text-faint);transition:all .2s}
+.seg-btn+.seg-btn{border-left:1px solid var(--line)}
+.seg-btn.active-call{background:var(--green-bg);color:var(--green)}
+.seg-btn.active-put{background:var(--red-bg);color:var(--red)}
+.seg-btn.active-long{background:rgba(58,158,255,.12);color:var(--blue)}
+.seg-btn.active-short{background:rgba(255,77,106,.1);color:var(--red)}
 
-  .card-delta {
-    font-size: 11px; margin-top: 4px;
-  }
-  .call .card-delta { color: #00774a; }
-  .put  .card-delta { color: #882030; }
+.po-summary{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.pos-card{border-radius:11px;padding:10px 12px;border:1px solid var(--line);
+  background:var(--bg2);text-align:center}
+.pos-label{font-family:var(--sans);font-size:9px;font-weight:700;
+  letter-spacing:.12em;text-transform:uppercase;color:var(--text-dim);margin-bottom:4px}
+.pos-val{font-size:18px;font-weight:700}
 
-  /* Moneyness pill */
-  .card-itm {
-    position: absolute; top: 8px; right: 10px;
-    font-family: var(--sans); font-size: 10px; font-weight: 700;
-    letter-spacing: 0.12em; padding: 2px 7px; border-radius: 20px;
-  }
-  .itm-call  { background: #003a1a; color: var(--green); border: 1px solid #005a28; }
-  .itm-put   { background: #3a0010; color: var(--red);   border: 1px solid #6a0020; }
-  .atm-badge { background: #3a2e00; color: var(--gold);  border: 1px solid #5a4800; }
+.po-table{width:100%;border:1px solid var(--line);border-radius:13px;overflow:hidden;margin-bottom:12px}
+.po-th{display:grid;background:var(--bg2);border-bottom:1px solid var(--line)}
+.po-tr{display:grid;border-bottom:1px solid var(--line2)}
+.po-tr:last-child{border-bottom:none}
+.po-td{padding:8px 7px;border-right:1px solid var(--line2);display:flex;align-items:center}
+.po-td:last-child{border-right:none}
+.po-td.r{justify-content:flex-end}
+.po-td.c{justify-content:center}
+.po-th-cell{font-family:var(--sans);font-size:10px;font-weight:700;
+  letter-spacing:.1em;text-transform:uppercase;padding:9px 7px;
+  border-right:1px solid var(--line);color:var(--text-dim);text-align:right}
+.po-th-cell:first-child{text-align:center}
+.po-th-cell:last-child{border-right:none}
 
-  /* Tabs */
-  .tabs {
-    display: flex; border-top: 1px solid var(--line);
-    margin: 0 -16px;
-  }
-  .tab-btn {
-    flex: 1; background: none; border: none; cursor: pointer;
-    font-family: var(--sans); font-size: 12px; font-weight: 700;
-    letter-spacing: 0.12em; text-transform: uppercase;
-    padding: 10px 0; color: var(--text-faint);
-    border-bottom: 2px solid transparent;
-    transition: all 0.2s;
-    position: relative;
-  }
-  .tab-btn.active { color: var(--blue); border-bottom-color: var(--blue); }
-  .tab-btn + .tab-btn { border-left: 1px solid var(--line); }
+/* Animations */
+@keyframes pulse-g{0%{box-shadow:0 0 0 0 rgba(0,230,118,.3)}70%{box-shadow:0 0 0 6px transparent}100%{box-shadow:0 0 0 0 transparent}}
+@keyframes pulse-r{0%{box-shadow:0 0 0 0 rgba(255,77,106,.3)}70%{box-shadow:0 0 0 6px transparent}100%{box-shadow:0 0 0 0 transparent}}
+.pc.call.upd{animation:pulse-g .4s ease}
+.pc.put.upd{animation:pulse-r .4s ease}
 
-  /* ── INPUTS ────────────────────────────── */
-  .inputs-wrap {
-    padding: 14px 16px 10px;
-    position: relative; z-index: 1;
-    border-bottom: 1px solid var(--line);
-  }
-  .inputs-grid {
-    display: grid; grid-template-columns: repeat(3,1fr); gap: 8px;
-  }
-  .input-group {}
-  .input-label {
-    font-family: var(--sans); font-size: 10px; font-weight: 700;
-    letter-spacing: 0.12em; text-transform: uppercase;
-    color: var(--text-dim); display: block; margin-bottom: 5px;
-    text-align: center;
-  }
-  .input-field {
-    width: 100%; background: var(--bg2);
-    border: 1px solid var(--line);
-    border-radius: 10px; padding: 10px 8px;
-    color: var(--text); font-family: var(--mono); font-size: 15px;
-    font-weight: 600; text-align: center;
-    outline: none; -webkit-appearance: none;
-    transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
-  }
-  .input-field:focus {
-    border-color: var(--blue);
-    background: #0d2040;
-    box-shadow: 0 0 0 3px rgba(58,158,255,0.12);
-  }
-  .input-field::-webkit-inner-spin-button,
-  .input-field::-webkit-outer-spin-button { -webkit-appearance: none; }
-
-  .t-hint {
-    text-align: center; font-size: 10px;
-    color: var(--text-faint); margin-top: 8px;
-    font-family: var(--sans); letter-spacing: 0.05em;
-  }
-
-  /* ── CONTENT PANELS ───────────────────── */
-  .panel { padding: 14px 12px 32px; position: relative; z-index: 1; }
-  .panel.hidden { display: none; }
-
-  /* ── TABLE ─────────────────────────────── */
-  .variation-table {
-    width: 100%;
-    border: 1px solid var(--line);
-    border-radius: 14px; overflow: hidden;
-  }
-  .tbl-head {
-    display: grid; grid-template-columns: 54px 1fr 1fr 1fr;
-    background: var(--bg2);
-    border-bottom: 1px solid var(--line);
-  }
-  .tbl-head-cell {
-    font-family: var(--sans); font-size: 11px; font-weight: 700;
-    letter-spacing: 0.14em; text-transform: uppercase;
-    padding: 10px 8px;
-    border-right: 1px solid var(--line);
-  }
-  .tbl-head-cell:first-child { text-align: center; color: var(--text-dim); }
-  .tbl-head-cell:last-child  { border-right: none; }
-  .tbl-head-cell.th-call { color: var(--green); text-align: right; }
-  .tbl-head-cell.th-put  { color: var(--red);   text-align: right; }
-  .tbl-head-cell.th-price{ color: var(--blue);  text-align: right; }
-
-  .tbl-row {
-    display: grid; grid-template-columns: 54px 1fr 1fr 1fr;
-    border-bottom: 1px solid var(--line2);
-    transition: background 0.15s;
-  }
-  .tbl-row:last-child { border-bottom: none; }
-  .tbl-row.row-neg { background: rgba(14,8,8,0.7); }
-  .tbl-row.row-pos { background: rgba(5,12,8,0.7); }
-  .tbl-row.row-base {
-    background: rgba(18,14,0,0.85);
-    box-shadow: inset 0 0 0 1px rgba(255,213,79,0.15);
-  }
-
-  .tbl-cell {
-    padding: 9px 8px;
-    border-right: 1px solid var(--line2);
-    display: flex; align-items: center;
-  }
-  .tbl-cell:last-child { border-right: none; }
-
-  /* % column */
-  .cell-pct { justify-content: center; }
-  .pct-pill {
-    font-family: var(--sans); font-size: 12px; font-weight: 700;
-    padding: 3px 7px; border-radius: 6px; text-align: center;
-    width: 100%; letter-spacing: 0.05em;
-  }
-  .pct-dot {
-    width: 5px; height: 5px; border-radius: 50%; margin: 0 auto; opacity: 0.25;
-  }
-
-  /* Numeric cells */
-  .cell-num { justify-content: flex-end; }
-  .num-val {
-    font-size: 13px; font-weight: 600; font-family: var(--mono);
-    text-align: right;
-  }
-  .num-val.price-val { color: var(--text-dim); }
-  .num-val.call-val  { color: #00c060; }
-  .num-val.put-val   { color: #dd3355; }
-  .num-val.base-price{ color: var(--gold); font-weight: 700; }
-  .num-val.base-call { color: var(--green); font-weight: 700; }
-  .num-val.base-put  { color: var(--red);   font-weight: 700; }
-
-  .tbl-note {
-    text-align: center; font-size: 10px; color: var(--text-faint);
-    font-family: var(--sans); letter-spacing: 0.06em; margin-top: 8px;
-  }
-
-  /* ── GREEKS ─────────────────────────────── */
-  .greeks-cards {
-    display: grid; grid-template-columns: 1fr 1fr;
-    gap: 8px; margin-bottom: 14px;
-  }
-  .greek-summary {
-    border-radius: 12px; padding: 12px 14px;
-    border: 1px solid var(--line); background: var(--bg2);
-    text-align: center;
-  }
-  .greek-summary .gs-label {
-    font-family: var(--sans); font-size: 11px; font-weight: 700;
-    letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 6px;
-  }
-  .greek-summary .gs-price {
-    font-size: 22px; font-weight: 700; line-height: 1;
-  }
-  .greek-summary .gs-badge {
-    font-family: var(--sans); font-size: 10px; font-weight: 700;
-    letter-spacing: 0.1em; display: inline-block;
-    padding: 2px 8px; border-radius: 20px; margin-top: 6px;
-  }
-  .gc { border-color: #00552a; background: var(--green-bg); }
-  .gc .gs-label { color: #00a855; }
-  .gc .gs-price { color: var(--green); }
-  .gp { border-color: #551020; background: var(--red-bg); }
-  .gp .gs-label { color: #cc3355; }
-  .gp .gs-price { color: var(--red); }
-
-  .greek-list {
-    background: var(--bg1); border: 1px solid var(--line);
-    border-radius: 14px; overflow: hidden;
-  }
-  .greek-row {
-    display: flex; justify-content: space-between; align-items: center;
-    padding: 12px 16px;
-    border-bottom: 1px solid var(--line2);
-  }
-  .greek-row:last-child { border-bottom: none; }
-  .greek-key {
-    font-family: var(--sans); font-size: 13px; font-weight: 600;
-    color: var(--text-dim); letter-spacing: 0.05em;
-  }
-  .greek-key span { color: var(--text-faint); font-size: 11px; margin-left: 4px; }
-  .greek-val {
-    font-size: 15px; font-weight: 700;
-  }
-
-  /* Animations */
-  @keyframes fadeSlide {
-    from { opacity: 0; transform: translateY(6px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-  .panel { animation: fadeSlide 0.2s ease; }
-
-  @keyframes pulse-green {
-    0%   { box-shadow: 0 0 0 0 rgba(0,230,118,0.3); }
-    70%  { box-shadow: 0 0 0 6px rgba(0,230,118,0); }
-    100% { box-shadow: 0 0 0 0 rgba(0,230,118,0); }
-  }
-  @keyframes pulse-red {
-    0%   { box-shadow: 0 0 0 0 rgba(255,77,106,0.3); }
-    70%  { box-shadow: 0 0 0 6px rgba(255,77,106,0); }
-    100% { box-shadow: 0 0 0 0 rgba(255,77,106,0); }
-  }
-  .price-card.call.updated { animation: pulse-green 0.4s ease; }
-  .price-card.put.updated  { animation: pulse-red 0.4s ease; }
-
-  .no-data {
-    text-align: center; padding: 40px 16px;
-    font-family: var(--sans); font-size: 14px;
-    color: var(--text-faint); letter-spacing: 0.05em;
-  }
+/* number input */
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none}
 </style>
 </head>
 <body>
 
-<!-- ═══════════════════════════════════════ HEADER ═══ -->
-<div class="header" id="header">
+<!-- ══════════ HEADER ══════════ -->
+<div class="header">
   <div class="header-top">
-    <div class="brand">
+    <div>
       <div class="brand-name">Black-Scholes</div>
       <div class="brand-sub">Opciones Europeas · BSM</div>
     </div>
     <div class="t-badge" id="tBadge" style="display:none">
-      <div class="label">Vencimiento</div>
-      <div class="value" id="tValue">—</div>
+      <div class="tl">Vencimiento</div>
+      <div class="tv" id="tVal">—</div>
     </div>
   </div>
-
   <div class="price-cards">
-    <div class="price-card call" id="callCard">
-      <div class="card-label">Call</div>
-      <div class="card-price" id="callPrice">—</div>
-      <div class="card-delta" id="callDelta">Δ —</div>
-      <div class="card-itm" id="callItm"></div>
+    <div class="pc call" id="cCard">
+      <div class="pc-label">Call</div>
+      <div class="pc-price" id="cPrice">—</div>
+      <div class="pc-delta" id="cDelta">Δ —</div>
+      <div class="pc-itm" id="cItm"></div>
     </div>
-    <div class="price-card put" id="putCard">
-      <div class="card-label">Put</div>
-      <div class="card-price" id="putPrice">—</div>
-      <div class="card-delta" id="putDelta">Δ —</div>
-      <div class="card-itm" id="putItm"></div>
+    <div class="pc put" id="pCard">
+      <div class="pc-label">Put</div>
+      <div class="pc-price" id="pPrice">—</div>
+      <div class="pc-delta" id="pDelta">Δ —</div>
+      <div class="pc-itm" id="pItm"></div>
     </div>
   </div>
-
   <div class="tabs">
-    <button class="tab-btn active" id="tabTable" onclick="switchTab('table')">Tabla Variación</button>
-    <button class="tab-btn" id="tabGreeks" onclick="switchTab('greeks')">Griegos</button>
+    <button class="tab-btn active" id="tab-tabla"   onclick="switchTab('tabla')">Tabla</button>
+    <button class="tab-btn"        id="tab-grafico" onclick="switchTab('grafico')">Gráfico</button>
+    <button class="tab-btn"        id="tab-payoff"  onclick="switchTab('payoff')">Payoff</button>
+    <button class="tab-btn"        id="tab-griegos" onclick="switchTab('griegos')">Griegos</button>
   </div>
 </div>
 
-<!-- ═══════════════════════════════════════ INPUTS ═══ -->
+<!-- ══════════ INPUTS ══════════ -->
 <div class="inputs-wrap">
   <div class="inputs-grid">
-    <div class="input-group">
-      <label class="input-label" for="iS">Spot S</label>
-      <input class="input-field" id="iS" type="number" value="70900" inputmode="decimal" step="any" oninput="calc()">
-    </div>
-    <div class="input-group">
-      <label class="input-label" for="iK">Strike K</label>
-      <input class="input-field" id="iK" type="number" value="70900" inputmode="decimal" step="any" oninput="calc()">
-    </div>
-    <div class="input-group">
-      <label class="input-label" for="iDias">Días T</label>
-      <input class="input-field" id="iDias" type="number" value="90" inputmode="numeric" step="1" oninput="calc()">
-    </div>
-    <div class="input-group">
-      <label class="input-label" for="iSigma">Vol σ %</label>
-      <input class="input-field" id="iSigma" type="number" value="25" inputmode="decimal" step="any" oninput="calc()">
-    </div>
-    <div class="input-group">
-      <label class="input-label" for="iR">Tasa r %</label>
-      <input class="input-field" id="iR" type="number" value="5" inputmode="decimal" step="any" oninput="calc()">
-    </div>
-    <div class="input-group">
-      <label class="input-label" for="iQ">Div. q %</label>
-      <input class="input-field" id="iQ" type="number" value="0" inputmode="decimal" step="any" oninput="calc()">
-    </div>
+    <div class="ig"><label class="ilabel">Spot S</label>
+      <input class="ifield" id="iS"     value="70900" inputmode="decimal" oninput="calc()"></div>
+    <div class="ig"><label class="ilabel">Strike K</label>
+      <input class="ifield" id="iK"     value="70900" inputmode="decimal" oninput="calc()"></div>
+    <div class="ig"><label class="ilabel">Días T</label>
+      <input class="ifield" id="iDias"  value="40"    inputmode="numeric" oninput="calc()"></div>
+    <div class="ig"><label class="ilabel">Vol σ %</label>
+      <input class="ifield" id="iSigma" value="40"    inputmode="decimal" oninput="calc()"></div>
+    <div class="ig"><label class="ilabel">Tasa r %</label>
+      <input class="ifield" id="iR"     value="18,1"  inputmode="decimal" oninput="calc()"></div>
+    <div class="ig"><label class="ilabel">Div. q %</label>
+      <input class="ifield" id="iQ"     value="0"     inputmode="decimal" oninput="calc()"></div>
   </div>
   <div class="t-hint" id="tHint"></div>
 </div>
 
-<!-- ═══════════════════════════════════════ TABLE PANEL ═══ -->
-<div class="panel" id="panelTable">
-  <div class="variation-table" id="varTable">
+<!-- ══════════ TABLA ══════════ -->
+<div class="panel" id="panel-tabla">
+  <div class="var-table" id="varTable">
     <div class="no-data">Ingresá los parámetros para calcular</div>
   </div>
-  <div class="tbl-note">pasos de 2% · etiquetas cada 4% · fila base en amarillo</div>
+  <div class="tbl-note">pasos 2% · etiquetas cada 4% · fila base en amarillo</div>
 </div>
 
-<!-- ═══════════════════════════════════════ GREEKS PANEL ═══ -->
-<div class="panel hidden" id="panelGreeks">
-  <div class="greeks-cards" id="greekCards"></div>
+<!-- ══════════ GRÁFICO ══════════ -->
+<div class="panel hidden" id="panel-grafico">
+  <div class="chart-wrap">
+    <div class="chart-title">Prima vs. Spot</div>
+    <div class="chart-legend">
+      <div class="leg-item"><div class="leg-dot" style="background:var(--green)"></div><span style="color:var(--green)">Call</span></div>
+      <div class="leg-item"><div class="leg-dot" style="background:var(--red)"></div><span style="color:var(--red)">Put</span></div>
+      <div class="leg-item"><div class="leg-dot" style="background:var(--gold);width:2px;height:2px;border-radius:50%"></div><span style="color:var(--gold)">Spot actual</span></div>
+    </div>
+    <div class="chart-svg-wrap" id="chartPrima"></div>
+  </div>
+</div>
+
+<!-- ══════════ GRIEGOS ══════════ -->
+<div class="panel hidden" id="panel-griegos">
+  <div class="greek-cards" id="greekCards"></div>
   <div class="greek-list" id="greekList"></div>
 </div>
 
+<!-- ══════════ PAYOFF ══════════ -->
+<div class="panel hidden" id="panel-payoff">
+  <!-- Inputs de posición -->
+  <div class="po-inputs">
+    <div class="po-title">Configuración de Posición</div>
+    <div class="seg" id="segTipo">
+      <button class="seg-btn active-call" id="btnCall2" onclick="setPoTipo('call')">CALL</button>
+      <button class="seg-btn" id="btnPut2" onclick="setPoTipo('put')">PUT</button>
+    </div>
+    <div class="seg" style="margin-top:6px" id="segDir">
+      <button class="seg-btn active-long" id="btnLong" onclick="setPoDir('long')">LONG ↑</button>
+      <button class="seg-btn" id="btnShort" onclick="setPoDir('short')">SHORT ↓</button>
+    </div>
+    <div class="po-grid" style="margin-top:8px">
+      <div class="ig"><label class="ilabel">Lotes</label>
+        <input class="ifield" id="iLotes" value="4" inputmode="numeric" oninput="calcPayoff()"></div>
+      <div class="ig"><label class="ilabel">Tam. lote</label>
+        <input class="ifield" id="iTamLote" value="100" inputmode="numeric" oninput="calcPayoff()"></div>
+    </div>
+    <div class="ig" style="margin-top:8px"><label class="ilabel">Prima pagada (por unidad)</label>
+      <input class="ifield" id="iPrimaPag" value="500" inputmode="decimal" oninput="calcPayoff()"></div>
+  </div>
+
+  <!-- Resumen posición -->
+  <div class="po-summary" id="poSummary"></div>
+
+  <!-- Chart payoff -->
+  <div class="chart-wrap">
+    <div class="chart-title">P&amp;L de la Posición vs. Spot</div>
+    <div class="chart-legend">
+      <div class="leg-item"><div class="leg-dot" style="background:var(--blue)"></div><span style="color:var(--blue)">Valor actual (MTM)</span></div>
+      <div class="leg-item"><div class="leg-dot" style="background:var(--gold)"></div><span style="color:var(--gold)">P&amp;L vencimiento</span></div>
+    </div>
+    <div class="chart-svg-wrap" id="chartPayoff"></div>
+  </div>
+
+  <!-- Tabla payoff -->
+  <div class="po-table" id="poTable">
+    <div class="no-data">Configurá la posición</div>
+  </div>
+</div>
+
 <script>
-/* ── Math helpers ─────────────────────────────────────── */
+/* ════════════════════════════════════════════════════
+   MATH
+════════════════════════════════════════════════════ */
 function erf(x){
-  const a=[0.254829592,-0.284496736,1.421413741,-1.453152027,1.061405429],p=0.3275911;
-  const s=x<0?-1:1; x=Math.abs(x);
+  const a=[.254829592,-.284496736,1.421413741,-1.453152027,1.061405429],p=.3275911;
+  const s=x<0?-1:1;x=Math.abs(x);
   const t=1/(1+p*x);
-  const y=1-((((a[4]*t+a[3])*t+a[2])*t+a[1])*t+a[0])*t*Math.exp(-x*x);
-  return s*y;
+  return s*(1-((((a[4]*t+a[3])*t+a[2])*t+a[1])*t+a[0])*t*Math.exp(-x*x));
 }
 const N=x=>(1+erf(x/Math.SQRT2))/2;
-const n=x=>Math.exp(-0.5*x*x)/Math.sqrt(2*Math.PI);
+const n=x=>Math.exp(-.5*x*x)/Math.sqrt(2*Math.PI);
 
-function bsCalc(S,K,r,q,sig,T,type){
-  if(T<=0||sig<=0||S<=0||K<=0) return null;
+function bs(S,K,r,q,sig,T,type){
+  if(T<=0||sig<=0||S<=0||K<=0)return null;
   const sq=Math.sqrt(T);
-  const d1=(Math.log(S/K)+(r-q+0.5*sig*sig)*T)/(sig*sq);
+  const d1=(Math.log(S/K)+(r-q+.5*sig*sig)*T)/(sig*sq);
   const d2=d1-sig*sq;
-  const eqT=Math.exp(-q*T), erT=Math.exp(-r*T);
+  const eqT=Math.exp(-q*T),erT=Math.exp(-r*T);
   let price,delta;
   if(type==='call'){price=S*eqT*N(d1)-K*erT*N(d2);delta=eqT*N(d1);}
   else{price=K*erT*N(-d2)-S*eqT*N(-d1);delta=eqT*(N(d1)-1);}
@@ -463,189 +369,373 @@ function bsCalc(S,K,r,q,sig,T,type){
   return{price,delta,gamma,vega,theta,rho,d1,d2};
 }
 
-/* ── Formatting ───────────────────────────────────────── */
-const fmt=(v,d=2)=>v==null||isNaN(v)?'—':v.toLocaleString('es-AR',{minimumFractionDigits:d,maximumFractionDigits:d});
-const fmtSgn=(v,d=4)=>{if(v==null||isNaN(v)) return'—'; return(v>=0?'+':'')+v.toFixed(d);}
-
-/* ── Steps ─────────────────────────────────────────────── */
-const STEPS=Array.from({length:25},(_,i)=>-24+i*2);
-
-/* ── Colour helpers ────────────────────────────────────── */
-function pctStyle(step){
-  if(step===0) return{bg:'#2a1e00',border:'#7a5800',color:'#ffd54f'};
-  if(step<0){
-    const k=Math.abs(step)/24;
-    return{bg:`rgba(${Math.round(40+k*80)},8,8,0.7)`,border:'#5a1018',color:'#ff8899'};
-  }
-  const k=step/24;
-  return{bg:`rgba(8,${Math.round(40+k*80)},18,0.7)`,border:'#1a5228',color:'#66ee99'};
+/* ════════════════════════════════════════════════════
+   HELPERS
+════════════════════════════════════════════════════ */
+function pv(id){
+  return parseFloat(document.getElementById(id).value.trim().replace(',','.'));
+}
+function fmt(v,d=2){
+  if(v==null||isNaN(v))return'—';
+  return v.toLocaleString('es-AR',{minimumFractionDigits:d,maximumFractionDigits:d});
+}
+function fmtPnl(v){
+  if(v==null||isNaN(v))return'—';
+  const s=v>=0?'+':'';
+  return s+v.toLocaleString('es-AR',{minimumFractionDigits:0,maximumFractionDigits:0});
 }
 
-/* ── Main calc ─────────────────────────────────────────── */
-let activeTab='table';
+const STEPS=Array.from({length:25},(_,i)=>-24+i*2);
 
+function pctStyle(s){
+  if(s===0)return{bg:'#2a1e00',br:'#7a5800',co:'#ffd54f'};
+  if(s<0){const k=Math.abs(s)/24;return{bg:`rgba(${Math.round(40+k*80)},8,8,.7)`,br:'#5a1018',co:'#ff8899'};}
+  const k=s/24;return{bg:`rgba(8,${Math.round(40+k*80)},18,.7)`,br:'#1a5228',co:'#66ee99'};
+}
+
+/* ════════════════════════════════════════════════════
+   STATE
+════════════════════════════════════════════════════ */
+let activeTab='tabla';
+let poTipo='call', poDir='long';
+let animT={};
+
+/* ════════════════════════════════════════════════════
+   MAIN CALC
+════════════════════════════════════════════════════ */
 function calc(){
-  const S=parseFloat(document.getElementById('iS').value);
-  const K=parseFloat(document.getElementById('iK').value);
-  const dias=parseFloat(document.getElementById('iDias').value);
-  const sig=parseFloat(document.getElementById('iSigma').value)/100;
-  const r=parseFloat(document.getElementById('iR').value)/100;
-  const q=parseFloat(document.getElementById('iQ').value)/100;
+  const S=pv('iS'),K=pv('iK'),dias=pv('iDias');
+  const sig=pv('iSigma')/100,r=pv('iR')/100,q=pv('iQ')/100;
   const T=dias/365;
+  const ok=![S,K,dias,sig,r,q].some(isNaN)&&S>0&&K>0&&dias>0&&sig>0;
 
-  const valid=![S,K,dias,sig,r,q].some(isNaN)&&S>0&&K>0&&dias>0&&sig>0;
+  document.getElementById('tBadge').style.display=ok?'block':'none';
+  if(ok){
+    document.getElementById('tVal').textContent=dias+' días';
+    document.getElementById('tHint').textContent='T = '+T.toFixed(4)+' años · r = '+(r*100).toFixed(1)+'%';
+  } else document.getElementById('tHint').textContent='';
 
-  // t-badge
-  document.getElementById('tBadge').style.display=valid?'block':'none';
-  if(valid){
-    document.getElementById('tValue').textContent=dias+' días';
-    document.getElementById('tHint').textContent='T = '+(T).toFixed(4)+' años';
-  } else {
-    document.getElementById('tHint').textContent='';
-  }
-
-  if(!valid){
-    document.getElementById('callPrice').textContent='—';
-    document.getElementById('putPrice').textContent='—';
-    document.getElementById('callDelta').textContent='Δ —';
-    document.getElementById('putDelta').textContent='Δ —';
-    document.getElementById('callItm').textContent='';
-    document.getElementById('putItm').textContent='';
-    document.getElementById('varTable').innerHTML='<div class="no-data">Ingresá los parámetros para calcular</div>';
+  if(!ok){
+    ['cPrice','pPrice'].forEach(id=>document.getElementById(id).textContent='—');
+    ['cDelta','pDelta'].forEach(id=>document.getElementById(id).textContent='Δ —');
+    ['cItm','pItm'].forEach(id=>{document.getElementById(id).textContent='';document.getElementById(id).className='pc-itm';});
+    document.getElementById('varTable').innerHTML='<div class="no-data">Ingresá los parámetros</div>';
+    document.getElementById('chartPrima').innerHTML='';
     document.getElementById('greekCards').innerHTML='';
     document.getElementById('greekList').innerHTML='';
     return;
   }
 
-  const call=bsCalc(S,K,r,q,sig,T,'call');
-  const put =bsCalc(S,K,r,q,sig,T,'put');
+  const call=bs(S,K,r,q,sig,T,'call');
+  const put =bs(S,K,r,q,sig,T,'put');
 
-  /* ── Header prices ── */
-  animateCard('callCard','call');
-  animateCard('putCard','put');
-  document.getElementById('callPrice').textContent=fmt(call?.price,2);
-  document.getElementById('putPrice').textContent=fmt(put?.price,2);
-  document.getElementById('callDelta').textContent='Δ '+(call?.delta?.toFixed(3)??'—');
-  document.getElementById('putDelta').textContent='Δ '+(put?.delta?.toFixed(3)??'—');
+  // Header cards
+  pulseCard('cCard','call');pulseCard('pCard','put');
+  document.getElementById('cPrice').textContent=fmt(call?.price,2);
+  document.getElementById('pPrice').textContent=fmt(put?.price,2);
+  document.getElementById('cDelta').textContent='Δ '+(call?.delta?.toFixed(3)??'—');
+  document.getElementById('pDelta').textContent='Δ '+(put?.delta?.toFixed(3)??'—');
+  const atm=Math.abs(S-K)/K<.005;
+  const cI=!atm&&S>K,pI=!atm&&S<K;
+  setItm('cItm',atm?'ATM':cI?'ITM':'OTM',atm?'atm-b':cI?'itm-c':'itm-p');
+  setItm('pItm',atm?'ATM':pI?'ITM':'OTM',atm?'atm-b':pI?'itm-p':'itm-c');
 
-  const atm=Math.abs(S-K)/K<0.005;
-  const cItm=!atm&&S>K, pItm=!atm&&S<K;
-  setItmBadge('callItm', atm?'ATM':cItm?'ITM':'OTM', atm?'atm-badge':cItm?'itm-call':'itm-put');
-  setItmBadge('putItm',  atm?'ATM':pItm?'ITM':'OTM', atm?'atm-badge':pItm?'itm-put':'itm-call');
-
-  /* ── Table ── */
-  buildTable(S,K,r,q,sig,T);
-
-  /* ── Greeks ── */
-  buildGreeks(S,K,call,put);
+  buildTabla(S,K,r,q,sig,T);
+  buildGrafico(S,K,r,q,sig,T);
+  buildGriegos(S,K,call,put,atm,cI,pI);
+  calcPayoff();
 }
 
-function setItmBadge(id,text,cls){
+function setItm(id,txt,cls){
   const el=document.getElementById(id);
-  el.textContent=text;
-  el.className='card-itm '+cls;
+  el.textContent=txt; el.className='pc-itm '+cls;
 }
-
-let animTimer={};
-function animateCard(id,type){
+function pulseCard(id,type){
   const el=document.getElementById(id);
-  el.classList.remove('updated');
-  clearTimeout(animTimer[id]);
-  void el.offsetWidth;
-  el.classList.add('updated');
-  animTimer[id]=setTimeout(()=>el.classList.remove('updated'),500);
+  el.classList.remove('upd');clearTimeout(animT[id]);void el.offsetWidth;
+  el.classList.add('upd');animT[id]=setTimeout(()=>el.classList.remove('upd'),500);
 }
 
-function buildTable(S,K,r,q,sig,T){
-  let html='<div class="tbl-head">'
-    +'<div class="tbl-head-cell">%</div>'
-    +'<div class="tbl-head-cell th-price">Precio</div>'
-    +'<div class="tbl-head-cell th-call">CALL</div>'
-    +'<div class="tbl-head-cell th-put">PUT</div>'
-    +'</div>';
-
+/* ════════════════════════════════════════════════════
+   TABLA
+════════════════════════════════════════════════════ */
+function buildTabla(S,K,r,q,sig,T){
+  let h=`<div class="th-row">
+    <div class="th-cell tc">%</div>
+    <div class="th-cell tp">Precio</div>
+    <div class="th-cell tca">Call</div>
+    <div class="th-cell tpu">Put</div>
+  </div>`;
   STEPS.forEach(step=>{
     const spot=S*(1+step/100);
-    const c=bsCalc(spot,K,r,q,sig,T,'call');
-    const p=bsCalc(spot,K,r,q,sig,T,'put');
-    const isBase=step===0;
-    const showLabel=step%4===0;
-    const rowClass=isBase?'row-base':step<0?'row-neg':'row-pos';
-    const {bg,border,color}=pctStyle(step);
-
-    /* % cell */
-    let pctCell='';
-    if(showLabel){
-      const label=step===0?'0%':step>0?`+${step}%`:`${step}%`;
-      pctCell=`<div class="pct-pill" style="background:${bg};border:1px solid ${border};color:${color}">${label}</div>`;
-    } else {
-      pctCell=`<div class="pct-dot" style="background:${color}"></div>`;
-    }
-
-    const priceClass=isBase?'base-price':'price-val';
-    const callClass =isBase?'base-call':'call-val';
-    const putClass  =isBase?'base-put':'put-val';
-
-    html+=`<div class="tbl-row ${rowClass}">
-      <div class="tbl-cell cell-pct">${pctCell}</div>
-      <div class="tbl-cell cell-num"><span class="num-val ${priceClass}">${fmt(spot,2)}</span></div>
-      <div class="tbl-cell cell-num"><span class="num-val ${callClass}">${fmt(c?.price,2)}</span></div>
-      <div class="tbl-cell cell-num"><span class="num-val ${putClass}">${fmt(p?.price,2)}</span></div>
+    const c=bs(spot,K,r,q,sig,T,'call');
+    const p=bs(spot,K,r,q,sig,T,'put');
+    const base=step===0,show=step%4===0;
+    const rc=base?'rb':step<0?'rn':'rp';
+    const {bg,br,co}=pctStyle(step);
+    const pctCell=show
+      ?`<div class="pct-pill" style="background:${bg};border:1px solid ${br};color:${co}">${step===0?'0%':step>0?'+'+step+'%':step+'%'}</div>`
+      :`<div class="pct-dot" style="background:${co}"></div>`;
+    h+=`<div class="tr ${rc}">
+      <div class="td tc-pct">${pctCell}</div>
+      <div class="td tc-num"><span class="nv ${base?'base':'dim'}">${fmt(spot,2)}</span></div>
+      <div class="td tc-num"><span class="nv ${base?'cbv':'cv'}">${fmt(c?.price,2)}</span></div>
+      <div class="td tc-num"><span class="nv ${base?'pbv':'pv'}">${fmt(p?.price,2)}</span></div>
     </div>`;
   });
-
-  document.getElementById('varTable').innerHTML=html;
+  document.getElementById('varTable').innerHTML=h;
 }
 
-function buildGreeks(S,K,call,put){
-  const atm=Math.abs(S-K)/K<0.005;
-  const cItm=!atm&&S>K, pItm=!atm&&S<K;
+/* ════════════════════════════════════════════════════
+   GRÁFICO
+════════════════════════════════════════════════════ */
+function buildGrafico(S,K,r,q,sig,T){
+  const pts=60;
+  const sMin=S*.65,sMax=S*1.35;
+  const data={call:[],put:[]};
+  for(let i=0;i<=pts;i++){
+    const spot=sMin+(sMax-sMin)*i/pts;
+    const c=bs(spot,K,r,q,sig,T,'call');
+    const p=bs(spot,K,r,q,sig,T,'put');
+    data.call.push({x:spot,y:c?.price??0});
+    data.put.push({x:spot,y:p?.price??0});
+  }
+  const series=[
+    {data:data.call,color:'#00e676',id:'call'},
+    {data:data.put, color:'#ff4d6a',id:'put'}
+  ];
+  const svgStr=makeSVG(series,sMin,sMax,null,null,[
+    {x:S,color:'#ffd54f',dash:false,label:'S'},
+    {x:K,color:'#3a9eff',dash:true,label:'K'}
+  ]);
+  document.getElementById('chartPrima').innerHTML=svgStr;
+}
 
-  const badge=(itm,atm)=>atm
-    ?`<div class="gs-badge atm-badge">ATM</div>`
-    :itm?`<div class="gs-badge itm-call">ITM</div>`
-        :`<div class="gs-badge itm-put">OTM</div>`;
+/* ════════════════════════════════════════════════════
+   SVG CHART ENGINE
+════════════════════════════════════════════════════ */
+function makeSVG(series,xMin,xMax,yMinForce,yMaxForce,vlines){
+  const W=360,H=200;
+  const PL=52,PR=12,PT=10,PB=36;
+  const cW=W-PL-PR,cH=H-PT-PB;
 
+  const allY=series.flatMap(s=>s.data.map(p=>p.y));
+  let yMin=yMinForce??Math.min(...allY,0);
+  let yMax=yMaxForce??Math.max(...allY);
+  if(yMax===yMin){yMax=yMin+1;}
+  const yPad=(yMax-yMin)*.05;
+  yMin-=yPad; yMax+=yPad;
+
+  const xs=x=>PL+(x-xMin)/(xMax-xMin)*cW;
+  const ys=y=>PT+cH-(y-yMin)/(yMax-yMin)*cH;
+
+  let svg=`<svg class="chart" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">`;
+  svg+=`<rect x="${PL}" y="${PT}" width="${cW}" height="${cH}" fill="rgba(11,22,37,.6)" rx="4"/>`;
+
+  // Grid Y
+  const yTicks=5;
+  for(let i=0;i<=yTicks;i++){
+    const yv=yMin+(yMax-yMin)*i/yTicks;
+    const yp=ys(yv);
+    svg+=`<line x1="${PL}" y1="${yp}" x2="${PL+cW}" y2="${yp}" stroke="#1a3050" stroke-width="1"/>`;
+    const lbl=yv>=1000?Math.round(yv/1000)+'K':yv.toFixed(yv<1?2:0);
+    svg+=`<text x="${PL-5}" y="${yp+4}" fill="#3a6080" font-size="9" font-family="JetBrains Mono,monospace" text-anchor="end">${lbl}</text>`;
+  }
+
+  // Zero line
+  if(yMin<0&&yMax>0){
+    const y0=ys(0);
+    svg+=`<line x1="${PL}" y1="${y0}" x2="${PL+cW}" y2="${y0}" stroke="#2a4a68" stroke-width="1.5" stroke-dasharray="4,3"/>`;
+  }
+
+  // Vertical reference lines
+  (vlines||[]).forEach(vl=>{
+    const xp=xs(vl.x);
+    if(xp<PL||xp>PL+cW)return;
+    const da=vl.dash?'stroke-dasharray="5,4"':'';
+    svg+=`<line x1="${xp}" y1="${PT}" x2="${xp}" y2="${PT+cH}" stroke="${vl.color}" stroke-width="1.2" ${da} opacity=".7"/>`;
+    svg+=`<text x="${xp+3}" y="${PT+10}" fill="${vl.color}" font-size="9" font-family="Barlow Condensed,sans-serif" font-weight="700" opacity=".9">${vl.label}</text>`;
+  });
+
+  // X axis labels
+  const xTicks=5;
+  for(let i=0;i<=xTicks;i++){
+    const xv=xMin+(xMax-xMin)*i/xTicks;
+    const xp=xs(xv);
+    const lbl=xv>=1000?Math.round(xv/1000)+'K':xv.toFixed(0);
+    svg+=`<text x="${xp}" y="${PT+cH+14}" fill="#3a6080" font-size="9" font-family="JetBrains Mono,monospace" text-anchor="middle">${lbl}</text>`;
+  }
+
+  // Lines
+  series.forEach(s=>{
+    const pts=s.data.map(p=>`${xs(p.x).toFixed(1)},${ys(p.y).toFixed(1)}`).join(' ');
+    svg+=`<polyline points="${pts}" fill="none" stroke="${s.color}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" opacity=".9"/>`;
+  });
+
+  // Clip
+  svg+=`<rect x="0" y="0" width="${PL}" height="${H}" fill="#060e18" opacity="1"/>`;
+  svg+=`<rect x="${PL+cW}" y="0" width="${PR+10}" height="${H}" fill="#060e18" opacity="1"/>`;
+  svg+=`<rect x="0" y="${PT+cH}" width="${W}" height="${PB+10}" fill="#060e18" opacity="1"/>`;
+  svg+=`<rect x="0" y="0" width="${W}" height="${PT}" fill="#060e18" opacity="1"/>`;
+
+  svg+='</svg>';
+  return svg;
+}
+
+/* ════════════════════════════════════════════════════
+   GRIEGOS
+════════════════════════════════════════════════════ */
+function buildGriegos(S,K,call,put,atm,cI,pI){
+  const badge=(itm,at,type)=>{
+    const t=at?'ATM':itm?'ITM':'OTM';
+    const c=at?`background:#3a2e00;color:var(--gold);border:1px solid var(--gold-bdr)`:
+              itm?`background:#003a1a;color:var(--green);border:1px solid #005a28`
+                :`background:#3a0010;color:var(--red);border:1px solid #6a0020`;
+    return`<div class="gc-badge" style="${c}">${t}</div>`;
+  };
   document.getElementById('greekCards').innerHTML=`
-    <div class="greek-summary gc">
-      <div class="gs-label">Call</div>
-      <div class="gs-price">${fmt(call?.price,4)}</div>
-      ${badge(cItm,atm)}
-    </div>
-    <div class="greek-summary gp">
-      <div class="gs-label">Put</div>
-      <div class="gs-price">${fmt(put?.price,4)}</div>
-      ${badge(pItm,atm)}
-    </div>`;
+    <div class="gcard gc"><div class="gc-label">Call</div>
+      <div class="gc-price">${fmt(call?.price,4)}</div>${badge(cI,atm,'call')}</div>
+    <div class="gcard gp"><div class="gc-label">Put</div>
+      <div class="gc-price">${fmt(put?.price,4)}</div>${badge(pI,atm,'put')}</div>`;
 
   const rows=[
-    {k:'Δ Delta',    sub:'call',  v:call?.delta?.toFixed(4),  c:'#3a9eff'},
-    {k:'Δ Delta',    sub:'put',   v:put?.delta?.toFixed(4),   c:'#3a9eff'},
-    {k:'Γ Gamma',    sub:'',      v:call?.gamma?.toFixed(6),  c:'#ffd54f'},
-    {k:'ν Vega',     sub:'/ 1%σ', v:call?.vega?.toFixed(4),  c:'#ff9f4a'},
-    {k:'Θ Theta',    sub:'/ día', v:call?.theta?.toFixed(4),  c:'#c084fc'},
-    {k:'ρ Rho',      sub:'/ 1%r', v:call?.rho?.toFixed(4),   c:'#67e8f9'},
-    {k:'d₁',         sub:'',      v:call?.d1?.toFixed(4),    c:'#5a7a98'},
-    {k:'d₂',         sub:'',      v:call?.d2?.toFixed(4),    c:'#5a7a98'},
+    {k:'Δ Delta',s:'call', v:call?.delta?.toFixed(4), c:'#3a9eff'},
+    {k:'Δ Delta',s:'put',  v:put?.delta?.toFixed(4),  c:'#3a9eff'},
+    {k:'Γ Gamma',s:'',     v:call?.gamma?.toFixed(6), c:'#ffd54f'},
+    {k:'ν Vega', s:'/ 1%σ',v:call?.vega?.toFixed(4),  c:'#ff9f4a'},
+    {k:'Θ Theta',s:'/ día',v:call?.theta?.toFixed(4), c:'#c084fc'},
+    {k:'ρ Rho',  s:'/ 1%r',v:call?.rho?.toFixed(4),   c:'#67e8f9'},
+    {k:'d₁',    s:'',      v:call?.d1?.toFixed(4),    c:'#3a6080'},
+    {k:'d₂',    s:'',      v:call?.d2?.toFixed(4),    c:'#3a6080'},
   ];
-
-  document.getElementById('greekList').innerHTML=rows.map(({k,sub,v,c})=>`
-    <div class="greek-row">
-      <div class="greek-key">${k}${sub?`<span>${sub}</span>`:''}</div>
-      <div class="greek-val" style="color:${c}">${v??'—'}</div>
-    </div>`).join('');
+  document.getElementById('greekList').innerHTML=rows.map(({k,s,v,c})=>`
+    <div class="gr-row"><div class="gr-key">${k}${s?`<span>${s}</span>`:''}</div>
+    <div class="gr-val" style="color:${c}">${v??'—'}</div></div>`).join('');
 }
 
-/* ── Tabs ─────────────────────────────────────────────── */
+/* ════════════════════════════════════════════════════
+   PAYOFF
+════════════════════════════════════════════════════ */
+function setPoTipo(t){
+  poTipo=t;
+  document.getElementById('btnCall2').className='seg-btn'+(t==='call'?' active-call':'');
+  document.getElementById('btnPut2').className='seg-btn'+(t==='put'?' active-put':'');
+  calcPayoff();
+}
+function setPoDir(d){
+  poDir=d;
+  document.getElementById('btnLong').className='seg-btn'+(d==='long'?' active-long':'');
+  document.getElementById('btnShort').className='seg-btn'+(d==='short'?' active-short':'');
+  calcPayoff();
+}
+
+function calcPayoff(){
+  const S=pv('iS'),K=pv('iK'),dias=pv('iDias');
+  const sig=pv('iSigma')/100,r=pv('iR')/100,q=pv('iQ')/100;
+  const T=dias/365;
+  const lotes=pv('iLotes'),tam=pv('iTamLote'),prima=pv('iPrimaPag');
+  const ok=![S,K,dias,sig,r,q,lotes,tam,prima].some(isNaN)&&S>0&&K>0&&dias>0&&sig>0&&lotes>0&&tam>0;
+  if(!ok){
+    document.getElementById('poTable').innerHTML='<div class="no-data">Completá todos los campos</div>';
+    document.getElementById('chartPayoff').innerHTML='';
+    document.getElementById('poSummary').innerHTML='';
+    return;
+  }
+
+  const dir=poDir==='long'?1:-1;
+  const totalUnits=lotes*tam;
+
+  // Resumen
+  const costoTotal=prima*totalUnits;
+  const bsBase=bs(S,K,r,q,sig,T,poTipo);
+  const mtmBase=bsBase?((bsBase.price-prima)*dir*totalUnits):null;
+  const summaryColor=mtmBase==null?'var(--text-dim)':mtmBase>=0?'var(--green)':'var(--red)';
+  document.getElementById('poSummary').innerHTML=`
+    <div class="pos-card"><div class="pos-label">Costo total</div>
+      <div class="pos-val" style="color:var(--text)">${fmt(costoTotal,0)}</div></div>
+    <div class="pos-card"><div class="pos-label">MTM actual</div>
+      <div class="pos-val" style="color:${summaryColor}">${fmtPnl(mtmBase)}</div></div>`;
+
+  // Table data
+  const rows=STEPS.map(step=>{
+    const spot=S*(1+step/100);
+    const bsR=bs(spot,K,r,q,sig,T,poTipo);
+    const primaActual=bsR?.price??null;
+    // Payoff vencimiento = intrinsic - prima
+    const intrinsic=poTipo==='call'?Math.max(spot-K,0):Math.max(K-spot,0);
+    const pnlExpiry=(intrinsic-prima)*dir*totalUnits;
+    // MTM = (bsPrice - prima) * dir * totalUnits
+    const pnlMtm=primaActual!=null?(primaActual-prima)*dir*totalUnits:null;
+    const base=step===0;
+    const show=step%4===0;
+    return{step,spot,primaActual,pnlMtm,pnlExpiry,base,show};
+  });
+
+  // Build table (cols: %, Spot, Prima act., MTM, Venc.)
+  const cols='52px 1fr 1fr 1fr 1fr';
+  let h=`<div class="po-th" style="grid-template-columns:${cols}">
+    <div class="po-th-cell" style="text-align:center">%</div>
+    <div class="po-th-cell">Spot</div>
+    <div class="po-th-cell">Prima</div>
+    <div class="po-th-cell" style="color:var(--blue)">MTM</div>
+    <div class="po-th-cell" style="color:var(--gold)">Venc.</div>
+  </div>`;
+
+  rows.forEach(({step,spot,primaActual,pnlMtm,pnlExpiry,base,show})=>{
+    const {bg,br,co}=pctStyle(step);
+    const rc=base?'rb':step<0?'rn':'rp';
+    const pctCell=show
+      ?`<div class="pct-pill" style="background:${bg};border:1px solid ${br};color:${co};font-size:11px">${step===0?'0%':step>0?'+'+step+'%':step+'%'}</div>`
+      :`<div class="pct-dot" style="background:${co}"></div>`;
+    const mtmColor=pnlMtm==null?'var(--text-faint)':pnlMtm>=0?'var(--green)':'var(--red)';
+    const expColor=pnlExpiry>=0?'var(--gold)':'var(--red)';
+    h+=`<div class="po-tr" style="grid-template-columns:${cols};background:${base?'rgba(18,14,0,.85)':step<0?'rgba(14,8,8,.65)':'rgba(5,12,8,.65)'}">
+      <div class="po-td c">${pctCell}</div>
+      <div class="po-td r"><span class="nv ${base?'base':'dim'}" style="font-size:12px">${fmt(spot,0)}</span></div>
+      <div class="po-td r"><span class="nv" style="color:${poTipo==='call'?(base?'var(--green)':'#00a855'):(base?'var(--red)':'#cc4455')};font-size:12px">${fmt(primaActual,2)}</span></div>
+      <div class="po-td r"><span class="nv" style="color:${mtmColor};font-size:12px">${fmtPnl(pnlMtm)}</span></div>
+      <div class="po-td r"><span class="nv" style="color:${expColor};font-size:12px">${fmtPnl(pnlExpiry)}</span></div>
+    </div>`;
+  });
+  document.getElementById('poTable').innerHTML=h;
+
+  // Payoff chart
+  const pts=80;
+  const sMin=S*.65,sMax=S*1.35;
+  const mtmSeries=[],expSeries=[];
+  for(let i=0;i<=pts;i++){
+    const spot=sMin+(sMax-sMin)*i/pts;
+    const bsR=bs(spot,K,r,q,sig,T,poTipo);
+    const intr=poTipo==='call'?Math.max(spot-K,0):Math.max(K-spot,0);
+    mtmSeries.push({x:spot,y:bsR?(bsR.price-prima)*dir*totalUnits:0});
+    expSeries.push({x:spot,y:(intr-prima)*dir*totalUnits});
+  }
+  const allPnl=[...mtmSeries,...expSeries].map(p=>p.y);
+  const yMin=Math.min(...allPnl);
+  const yMax=Math.max(...allPnl);
+  const svgStr=makeSVG(
+    [{data:mtmSeries,color:'#3a9eff'},{data:expSeries,color:'#ffd54f'}],
+    sMin,sMax,yMin,yMax,
+    [{x:S,color:'#ffffff',dash:false,label:'S'},{x:K,color:'#a0c0e0',dash:true,label:'K'}]
+  );
+  document.getElementById('chartPayoff').innerHTML=svgStr;
+}
+
+/* ════════════════════════════════════════════════════
+   TABS
+════════════════════════════════════════════════════ */
 function switchTab(tab){
   activeTab=tab;
-  document.getElementById('panelTable').classList.toggle('hidden',tab!=='table');
-  document.getElementById('panelGreeks').classList.toggle('hidden',tab!=='greeks');
-  document.getElementById('tabTable').classList.toggle('active',tab==='table');
-  document.getElementById('tabGreeks').classList.toggle('active',tab==='greeks');
+  ['tabla','grafico','payoff','griegos'].forEach(t=>{
+    document.getElementById('panel-'+t).classList.toggle('hidden',t!==tab);
+    document.getElementById('tab-'+t).classList.toggle('active',t===tab);
+  });
 }
 
-/* ── Init ─────────────────────────────────────────────── */
+/* ════════════════════════════════════════════════════
+   INIT
+════════════════════════════════════════════════════ */
 calc();
 </script>
 </body>
