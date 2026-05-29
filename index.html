@@ -205,6 +205,43 @@ svg.chart{width:100%;display:block;overflow:visible}
 .po-th-cell:first-child{text-align:center}
 .po-th-cell:last-child{border-right:none}
 
+/* ── LEG CARDS ── */
+.leg-card{background:var(--bg1);border:1px solid var(--line);border-radius:12px;
+  padding:10px;margin-bottom:10px;position:relative;animation:fadeUp .2s ease}
+.leg-card.lc-long{border-left:3px solid var(--blue)}
+.leg-card.lc-short{border-left:3px solid var(--red)}
+.leg-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.leg-num{font-family:var(--sans);font-size:11px;font-weight:700;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--text-dim)}
+.leg-del{background:none;border:none;color:var(--red-mid);font-size:18px;
+  cursor:pointer;line-height:1;padding:0 4px;opacity:.7}
+.leg-del:active{opacity:1}
+.leg-segs{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px}
+.leg-seg{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--line);
+  border-radius:8px;overflow:hidden}
+.lseg-btn{background:none;border:none;cursor:pointer;font-family:var(--sans);
+  font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+  padding:7px 0;color:var(--text-faint);transition:all .15s}
+.lseg-btn+.lseg-btn{border-left:1px solid var(--line)}
+.lseg-btn.on-call{background:var(--green-bg);color:var(--green)}
+.lseg-btn.on-put{background:var(--red-bg);color:var(--red)}
+.lseg-btn.on-long{background:rgba(58,158,255,.12);color:var(--blue)}
+.lseg-btn.on-short{background:rgba(255,77,106,.1);color:var(--red)}
+.leg-fields{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
+.leg-field{}
+.leg-field label{font-family:var(--sans);font-size:9px;font-weight:700;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--text-dim);
+  display:block;margin-bottom:3px;text-align:center}
+.leg-field input{width:100%;background:var(--bg2);border:1px solid var(--line);
+  border-radius:8px;padding:8px 4px;color:var(--text);font-family:var(--mono);
+  font-size:14px;font-weight:600;text-align:center;outline:none;-webkit-appearance:none;
+  transition:border-color .15s,box-shadow .15s}
+.leg-field input:focus{border-color:var(--blue);box-shadow:0 0 0 2px rgba(58,158,255,.12)}
+.preset-item{background:var(--bg2);border:1px solid var(--line);border-radius:8px;
+  padding:8px 6px;font-family:var(--sans);font-size:11px;font-weight:600;
+  color:var(--text);cursor:pointer;text-align:center;letter-spacing:.04em}
+.preset-item:active{background:var(--bg3)}
+
 /* Animations */
 @keyframes pulse-g{0%{box-shadow:0 0 0 0 rgba(0,230,118,.3)}70%{box-shadow:0 0 0 6px transparent}100%{box-shadow:0 0 0 0 transparent}}
 @keyframes pulse-r{0%{box-shadow:0 0 0 0 rgba(255,77,106,.3)}70%{box-shadow:0 0 0 6px transparent}100%{box-shadow:0 0 0 0 transparent}}
@@ -300,33 +337,45 @@ input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none}
 
 <!-- ══════════ PAYOFF ══════════ -->
 <div class="panel hidden" id="panel-payoff">
-  <!-- Inputs de posición -->
-  <div class="po-inputs">
-    <div class="po-title">Configuración de Posición</div>
-    <div class="seg" id="segTipo">
-      <button class="seg-btn active-call" id="btnCall2" onclick="setPoTipo('call')">CALL</button>
-      <button class="seg-btn" id="btnPut2" onclick="setPoTipo('put')">PUT</button>
+
+  <!-- Tam de lote global -->
+  <div class="po-inputs" style="padding:10px 12px">
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
+      <div style="flex:1">
+        <label class="ilabel" style="text-align:left">Tamaño de lote (unid./contrato)</label>
+      </div>
+      <input class="ifield" id="iTamLote" value="100" inputmode="numeric"
+        style="width:90px" oninput="calcPayoff()">
     </div>
-    <div class="seg" style="margin-top:6px" id="segDir">
-      <button class="seg-btn active-long" id="btnLong" onclick="setPoDir('long')">LONG ↑</button>
-      <button class="seg-btn" id="btnShort" onclick="setPoDir('short')">SHORT ↓</button>
-    </div>
-    <div class="po-grid" style="margin-top:8px">
-      <div class="ig"><label class="ilabel">Lotes</label>
-        <input class="ifield" id="iLotes" value="4" inputmode="numeric" oninput="calcPayoff()"></div>
-      <div class="ig"><label class="ilabel">Tam. lote</label>
-        <input class="ifield" id="iTamLote" value="100" inputmode="numeric" oninput="calcPayoff()"></div>
-    </div>
-    <div class="ig" style="margin-top:8px"><label class="ilabel">Prima pagada (por unidad)</label>
-      <input class="ifield" id="iPrimaPag" value="500" inputmode="decimal" oninput="calcPayoff()"></div>
   </div>
 
-  <!-- Resumen posición -->
+  <!-- Legs -->
+  <div class="po-title" style="padding:0 4px 8px;display:flex;justify-content:space-between;align-items:center">
+    <span>Estrategia · Legs</span>
+    <button id="presetBtn" onclick="togglePresets()"
+      style="background:var(--bg2);border:1px solid var(--line);color:var(--blue);
+      font-family:var(--sans);font-size:10px;font-weight:700;letter-spacing:.1em;
+      text-transform:uppercase;padding:4px 10px;border-radius:7px;cursor:pointer">Presets ▾</button>
+  </div>
+
+  <!-- Preset menu -->
+  <div id="presetMenu" style="display:none;background:var(--bg1);border:1px solid var(--line);
+    border-radius:11px;padding:6px;margin-bottom:10px;display:none;grid-template-columns:1fr 1fr;gap:6px">
+  </div>
+
+  <div id="legsContainer"></div>
+
+  <button onclick="addLeg()" style="width:100%;background:var(--bg2);
+    border:1px dashed var(--blue-dim);color:var(--blue);font-family:var(--sans);
+    font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+    padding:11px;border-radius:11px;cursor:pointer;margin-bottom:14px">+ Agregar Leg</button>
+
+  <!-- Resumen estrategia -->
   <div class="po-summary" id="poSummary"></div>
 
   <!-- Chart payoff -->
   <div class="chart-wrap">
-    <div class="chart-title">P&amp;L de la Posición vs. Spot</div>
+    <div class="chart-title">P&amp;L de la Estrategia vs. Spot</div>
     <div class="chart-legend">
       <div class="leg-item"><div class="leg-dot" style="background:var(--blue)"></div><span style="color:var(--blue)">Valor actual (MTM)</span></div>
       <div class="leg-item"><div class="leg-dot" style="background:var(--gold)"></div><span style="color:var(--gold)">P&amp;L vencimiento</span></div>
@@ -336,7 +385,7 @@ input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none}
 
   <!-- Tabla payoff -->
   <div class="po-table" id="poTable">
-    <div class="no-data">Configurá la posición</div>
+    <div class="no-data">Configurá la estrategia</div>
   </div>
 </div>
 
@@ -397,8 +446,14 @@ function pctStyle(s){
    STATE
 ════════════════════════════════════════════════════ */
 let activeTab='tabla';
-let poTipo='call', poDir='long';
 let animT={};
+
+/* Legs state — strike/prima/lotes viven en el DOM; tipo/dir acá */
+let legs=[];
+let legSeq=0;
+function newLeg(tipo,dir,strike,prima,lotes){
+  return {id:++legSeq, tipo, dir, strike, prima, lotes};
+}
 
 /* ════════════════════════════════════════════════════
    MAIN CALC
@@ -617,107 +672,211 @@ function buildGriegos(S,K,call,put,atm,cI,pI){
 /* ════════════════════════════════════════════════════
    PAYOFF
 ════════════════════════════════════════════════════ */
-function setPoTipo(t){
-  poTipo=t;
-  document.getElementById('btnCall2').className='seg-btn'+(t==='call'?' active-call':'');
-  document.getElementById('btnPut2').className='seg-btn'+(t==='put'?' active-put':'');
+/* ── LEG MANAGEMENT ── */
+function addLeg(tipo,dir,strike,prima,lotes){
+  const K=pv('iK');
+  legs.push(newLeg(
+    tipo||'call',
+    dir||'long',
+    strike!=null?strike:(isNaN(K)?70900:K),
+    prima!=null?prima:500,
+    lotes!=null?lotes:1
+  ));
+  renderLegs();
   calcPayoff();
 }
-function setPoDir(d){
-  poDir=d;
-  document.getElementById('btnLong').className='seg-btn'+(d==='long'?' active-long':'');
-  document.getElementById('btnShort').className='seg-btn'+(d==='short'?' active-short':'');
+function removeLeg(id){
+  legs=legs.filter(l=>l.id!==id);
+  renderLegs();
+  calcPayoff();
+}
+function setLegTipo(id,t){
+  const l=legs.find(x=>x.id===id); if(!l)return;
+  l.tipo=t; renderLegs(); calcPayoff();
+}
+function setLegDir(id,d){
+  const l=legs.find(x=>x.id===id); if(!l)return;
+  l.dir=d; renderLegs(); calcPayoff();
+}
+/* lee strike/prima/lotes desde el DOM y los sincroniza al state */
+function syncLeg(id){
+  const l=legs.find(x=>x.id===id); if(!l)return;
+  const gs=v=>{const el=document.getElementById(v);return el?el.value.trim().replace(',','.'):'';};
+  l.strike=parseFloat(gs(`leg-${id}-strike`));
+  l.prima =parseFloat(gs(`leg-${id}-prima`));
+  l.lotes =parseFloat(gs(`leg-${id}-lotes`));
   calcPayoff();
 }
 
+function renderLegs(){
+  const cont=document.getElementById('legsContainer');
+  if(legs.length===0){
+    cont.innerHTML='<div class="no-data" style="padding:20px">Sin legs · agregá al menos uno</div>';
+    return;
+  }
+  cont.innerHTML=legs.map((l,idx)=>`
+    <div class="leg-card ${l.dir==='long'?'lc-long':'lc-short'}">
+      <div class="leg-head">
+        <span class="leg-num">Leg ${idx+1}</span>
+        <button class="leg-del" onclick="removeLeg(${l.id})" title="Eliminar">✕</button>
+      </div>
+      <div class="leg-segs">
+        <div class="leg-seg">
+          <button class="lseg-btn ${l.tipo==='call'?'on-call':''}" onclick="setLegTipo(${l.id},'call')">Call</button>
+          <button class="lseg-btn ${l.tipo==='put'?'on-put':''}"  onclick="setLegTipo(${l.id},'put')">Put</button>
+        </div>
+        <div class="leg-seg">
+          <button class="lseg-btn ${l.dir==='long'?'on-long':''}"  onclick="setLegDir(${l.id},'long')">Long ↑</button>
+          <button class="lseg-btn ${l.dir==='short'?'on-short':''}" onclick="setLegDir(${l.id},'short')">Short ↓</button>
+        </div>
+      </div>
+      <div class="leg-fields">
+        <div class="leg-field"><label>Strike</label>
+          <input id="leg-${l.id}-strike" value="${l.strike}" inputmode="decimal" oninput="syncLeg(${l.id})"></div>
+        <div class="leg-field"><label>Prima</label>
+          <input id="leg-${l.id}-prima" value="${l.prima}" inputmode="decimal" oninput="syncLeg(${l.id})"></div>
+        <div class="leg-field"><label>Lotes</label>
+          <input id="leg-${l.id}-lotes" value="${l.lotes}" inputmode="numeric" oninput="syncLeg(${l.id})"></div>
+      </div>
+    </div>`).join('');
+}
+
+/* ── PRESETS ── */
+function togglePresets(){
+  const m=document.getElementById('presetMenu');
+  const open=m.style.display==='grid';
+  if(open){m.style.display='none';return;}
+  const K=pv('iK'); const baseK=isNaN(K)?70900:K;
+  const presets=[
+    {name:'Long Call',     build:()=>[['call','long',baseK,500,1]]},
+    {name:'Long Put',      build:()=>[['put','long',baseK,500,1]]},
+    {name:'Bull Call Sprd',build:()=>[['call','long',baseK*0.95,800,1],['call','short',baseK*1.05,300,1]]},
+    {name:'Bear Put Sprd', build:()=>[['put','long',baseK*1.05,800,1],['put','short',baseK*0.95,300,1]]},
+    {name:'Straddle',      build:()=>[['call','long',baseK,500,1],['put','long',baseK,500,1]]},
+    {name:'Strangle',      build:()=>[['call','long',baseK*1.05,300,1],['put','long',baseK*0.95,300,1]]},
+  ];
+  m.innerHTML=presets.map((p,i)=>`<div class="preset-item" onclick="applyPreset(${i})">${p.name}</div>`).join('');
+  window._presets=presets;
+  m.style.display='grid';
+}
+function applyPreset(i){
+  const p=window._presets[i]; if(!p)return;
+  legs=[]; 
+  p.build().forEach(([tipo,dir,strike,prima,lotes])=>{
+    legs.push(newLeg(tipo,dir,Math.round(strike),prima,lotes));
+  });
+  document.getElementById('presetMenu').style.display='none';
+  renderLegs(); calcPayoff();
+}
+
+/* ── STRATEGY CALC ── */
+function legPnl(leg,spot,r,q,sig,T,tam,mode){
+  const dir=leg.dir==='long'?1:-1;
+  const units=leg.lotes*tam;
+  if([leg.strike,leg.prima,leg.lotes].some(isNaN)||leg.strike<=0||leg.lotes<=0)return null;
+  if(mode==='mtm'){
+    const bsR=bs(spot,leg.strike,r,q,sig,T,leg.tipo);
+    if(!bsR)return null;
+    return (bsR.price-leg.prima)*dir*units;
+  } else { // expiry
+    const intr=leg.tipo==='call'?Math.max(spot-leg.strike,0):Math.max(leg.strike-spot,0);
+    return (intr-leg.prima)*dir*units;
+  }
+}
+
 function calcPayoff(){
-  const S=pv('iS'),K=pv('iK'),dias=pv('iDias');
+  const S=pv('iS'),dias=pv('iDias');
   const sig=pv('iSigma')/100,r=pv('iR')/100,q=pv('iQ')/100;
   const T=dias/365;
-  const lotes=pv('iLotes'),tam=pv('iTamLote'),prima=pv('iPrimaPag');
-  const ok=![S,K,dias,sig,r,q,lotes,tam,prima].some(isNaN)&&S>0&&K>0&&dias>0&&sig>0&&lotes>0&&tam>0;
-  if(!ok){
-    document.getElementById('poTable').innerHTML='<div class="no-data">Completá todos los campos</div>';
+  const tam=pv('iTamLote');
+  const baseOk=![S,dias,sig,r,q,tam].some(isNaN)&&S>0&&dias>0&&sig>0&&tam>0;
+  const validLegs=legs.filter(l=>![l.strike,l.prima,l.lotes].some(isNaN)&&l.strike>0&&l.lotes>0);
+
+  if(!baseOk||validLegs.length===0){
+    document.getElementById('poTable').innerHTML='<div class="no-data">Configurá la estrategia (al menos un leg válido)</div>';
     document.getElementById('chartPayoff').innerHTML='';
     document.getElementById('poSummary').innerHTML='';
     return;
   }
 
-  const dir=poDir==='long'?1:-1;
-  const totalUnits=lotes*tam;
-
-  // Resumen
-  const costoTotal=prima*totalUnits;
-  const bsBase=bs(S,K,r,q,sig,T,poTipo);
-  const mtmBase=bsBase?((bsBase.price-prima)*dir*totalUnits):null;
-  const summaryColor=mtmBase==null?'var(--text-dim)':mtmBase>=0?'var(--green)':'var(--red)';
-  document.getElementById('poSummary').innerHTML=`
-    <div class="pos-card"><div class="pos-label">Costo total</div>
-      <div class="pos-val" style="color:var(--text)">${fmt(costoTotal,0)}</div></div>
-    <div class="pos-card"><div class="pos-label">MTM actual</div>
-      <div class="pos-val" style="color:${summaryColor}">${fmtPnl(mtmBase)}</div></div>`;
-
-  // Table data
-  const rows=STEPS.map(step=>{
-    const spot=S*(1+step/100);
-    const bsR=bs(spot,K,r,q,sig,T,poTipo);
-    const primaActual=bsR?.price??null;
-    // Payoff vencimiento = intrinsic - prima
-    const intrinsic=poTipo==='call'?Math.max(spot-K,0):Math.max(K-spot,0);
-    const pnlExpiry=(intrinsic-prima)*dir*totalUnits;
-    // MTM = (bsPrice - prima) * dir * totalUnits
-    const pnlMtm=primaActual!=null?(primaActual-prima)*dir*totalUnits:null;
-    const base=step===0;
-    const show=step%4===0;
-    return{step,spot,primaActual,pnlMtm,pnlExpiry,base,show};
+  // Resumen: costo neto (débito + / crédito −) y MTM actual total
+  let netDebit=0;
+  validLegs.forEach(l=>{
+    const dir=l.dir==='long'?1:-1;
+    netDebit+=l.prima*dir*l.lotes*tam;
   });
+  let mtmTotal=0, mtmOk=true;
+  validLegs.forEach(l=>{
+    const p=legPnl(l,S,r,q,sig,T,tam,'mtm');
+    if(p==null)mtmOk=false; else mtmTotal+=p;
+  });
+  const debitLabel=netDebit>=0?'Débito neto':'Crédito neto';
+  const mtmColor=!mtmOk?'var(--text-dim)':mtmTotal>=0?'var(--green)':'var(--red)';
+  document.getElementById('poSummary').innerHTML=`
+    <div class="pos-card"><div class="pos-label">${debitLabel}</div>
+      <div class="pos-val" style="color:var(--text)">${fmt(Math.abs(netDebit),0)}</div></div>
+    <div class="pos-card"><div class="pos-label">MTM actual</div>
+      <div class="pos-val" style="color:${mtmColor}">${mtmOk?fmtPnl(mtmTotal):'—'}</div></div>`;
 
-  // Build table (cols: %, Spot, Prima act., MTM, Venc.)
-  const cols='52px 1fr 1fr 1fr 1fr';
+  // Tabla: %, Spot, MTM total, Venc. total
+  const cols='54px 1.1fr 1fr 1fr';
   let h=`<div class="po-th" style="grid-template-columns:${cols}">
     <div class="po-th-cell" style="text-align:center">%</div>
     <div class="po-th-cell">Spot</div>
-    <div class="po-th-cell">Prima</div>
-    <div class="po-th-cell" style="color:var(--blue)">MTM</div>
+    <div class="po-th-cell" style="color:var(--blue)">MTM total</div>
     <div class="po-th-cell" style="color:var(--gold)">Venc.</div>
   </div>`;
 
-  rows.forEach(({step,spot,primaActual,pnlMtm,pnlExpiry,base,show})=>{
+  STEPS.forEach(step=>{
+    const spot=S*(1+step/100);
+    let mtm=0,mtmValid=true,exp=0;
+    validLegs.forEach(l=>{
+      const m=legPnl(l,spot,r,q,sig,T,tam,'mtm');
+      const e=legPnl(l,spot,r,q,sig,T,tam,'expiry');
+      if(m==null)mtmValid=false; else mtm+=m;
+      exp+=e;
+    });
+    const base=step===0, show=step%4===0;
     const {bg,br,co}=pctStyle(step);
-    const rc=base?'rb':step<0?'rn':'rp';
     const pctCell=show
       ?`<div class="pct-pill" style="background:${bg};border:1px solid ${br};color:${co};font-size:11px">${step===0?'0%':step>0?'+'+step+'%':step+'%'}</div>`
       :`<div class="pct-dot" style="background:${co}"></div>`;
-    const mtmColor=pnlMtm==null?'var(--text-faint)':pnlMtm>=0?'var(--green)':'var(--red)';
-    const expColor=pnlExpiry>=0?'var(--gold)':'var(--red)';
+    const mtmColor=!mtmValid?'var(--text-faint)':mtm>=0?'var(--green)':'var(--red)';
+    const expColor=exp>=0?'var(--gold)':'var(--red)';
     h+=`<div class="po-tr" style="grid-template-columns:${cols};background:${base?'rgba(18,14,0,.85)':step<0?'rgba(14,8,8,.65)':'rgba(5,12,8,.65)'}">
       <div class="po-td c">${pctCell}</div>
       <div class="po-td r"><span class="nv ${base?'base':'dim'}" style="font-size:12px">${fmt(spot,0)}</span></div>
-      <div class="po-td r"><span class="nv" style="color:${poTipo==='call'?(base?'var(--green)':'#00a855'):(base?'var(--red)':'#cc4455')};font-size:12px">${fmt(primaActual,2)}</span></div>
-      <div class="po-td r"><span class="nv" style="color:${mtmColor};font-size:12px">${fmtPnl(pnlMtm)}</span></div>
-      <div class="po-td r"><span class="nv" style="color:${expColor};font-size:12px">${fmtPnl(pnlExpiry)}</span></div>
+      <div class="po-td r"><span class="nv" style="color:${mtmColor};font-size:12px">${mtmValid?fmtPnl(mtm):'—'}</span></div>
+      <div class="po-td r"><span class="nv" style="color:${expColor};font-size:12px">${fmtPnl(exp)}</span></div>
     </div>`;
   });
   document.getElementById('poTable').innerHTML=h;
 
-  // Payoff chart
-  const pts=80;
-  const sMin=S*.65,sMax=S*1.35;
+  // Chart: rango cubre spot y todos los strikes
+  const strikes=validLegs.map(l=>l.strike);
+  const lo=Math.min(S,...strikes), hi=Math.max(S,...strikes);
+  const span=hi-lo||S*0.3;
+  const sMin=Math.max(0.01, lo-span*0.5), sMax=hi+span*0.5;
+  const pts=90;
   const mtmSeries=[],expSeries=[];
   for(let i=0;i<=pts;i++){
     const spot=sMin+(sMax-sMin)*i/pts;
-    const bsR=bs(spot,K,r,q,sig,T,poTipo);
-    const intr=poTipo==='call'?Math.max(spot-K,0):Math.max(K-spot,0);
-    mtmSeries.push({x:spot,y:bsR?(bsR.price-prima)*dir*totalUnits:0});
-    expSeries.push({x:spot,y:(intr-prima)*dir*totalUnits});
+    let mtm=0,exp=0,mok=true;
+    validLegs.forEach(l=>{
+      const m=legPnl(l,spot,r,q,sig,T,tam,'mtm');
+      const e=legPnl(l,spot,r,q,sig,T,tam,'expiry');
+      if(m==null)mok=false; else mtm+=m;
+      exp+=e;
+    });
+    if(mok)mtmSeries.push({x:spot,y:mtm});
+    expSeries.push({x:spot,y:exp});
   }
   const allPnl=[...mtmSeries,...expSeries].map(p=>p.y);
-  const yMin=Math.min(...allPnl);
-  const yMax=Math.max(...allPnl);
+  const vlines=[{x:S,color:'#ffffff',dash:false,label:'S'}];
+  strikes.forEach((k,i)=>vlines.push({x:k,color:'#a0c0e0',dash:true,label:'K'+(strikes.length>1?(i+1):'')}));
   const svgStr=makeSVG(
     [{data:mtmSeries,color:'#3a9eff'},{data:expSeries,color:'#ffd54f'}],
-    sMin,sMax,yMin,yMax,
-    [{x:S,color:'#ffffff',dash:false,label:'S'},{x:K,color:'#a0c0e0',dash:true,label:'K'}]
+    sMin,sMax,Math.min(...allPnl),Math.max(...allPnl),vlines
   );
   document.getElementById('chartPayoff').innerHTML=svgStr;
 }
@@ -736,6 +895,9 @@ function switchTab(tab){
 /* ════════════════════════════════════════════════════
    INIT
 ════════════════════════════════════════════════════ */
+// Seed con un leg inicial (Long Call, strike = K, 4 lotes)
+legs.push(newLeg('call','long',70900,500,4));
+renderLegs();
 calc();
 </script>
 </body>
