@@ -294,7 +294,7 @@ input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none}
   <div class="inputs-grid">
     <div class="ig"><label class="ilabel">Spot S</label>
       <input class="ifield" id="iS"     value="70900" inputmode="decimal" oninput="calc()"></div>
-    <div class="ig"><label class="ilabel">Strike K</label>
+    <div class="ig" id="ig-K"><label class="ilabel">Strike K</label>
       <input class="ifield" id="iK"     value="70900" inputmode="decimal" oninput="calc()"></div>
     <div class="ig"><label class="ilabel">Días T</label>
       <input class="ifield" id="iDias"  value="40"    inputmode="numeric" oninput="calc()"></div>
@@ -302,7 +302,7 @@ input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none}
       <input class="ifield" id="iSigma" value="40"    inputmode="decimal" oninput="calc()"></div>
     <div class="ig"><label class="ilabel">Tasa r %</label>
       <input class="ifield" id="iR"     value="18,1"  inputmode="decimal" oninput="calc()"></div>
-    <div class="ig"><label class="ilabel">Div. q %</label>
+    <div class="ig" id="ig-q"><label class="ilabel">Div. q %</label>
       <input class="ifield" id="iQ"     value="0"     inputmode="decimal" oninput="calc()"></div>
   </div>
   <div class="t-hint" id="tHint"></div>
@@ -434,6 +434,36 @@ function fmtPnl(v){
   return s+v.toLocaleString('es-AR',{minimumFractionDigits:0,maximumFractionDigits:0});
 }
 
+/* ════════════════════════════════════════════════════
+   PERSISTENCIA (localStorage)
+════════════════════════════════════════════════════ */
+const LS_KEY='bsOptions_v1';
+function saveState(){
+  try{
+    const globals={};
+    ['iS','iK','iDias','iSigma','iR','iQ','iTamLote'].forEach(id=>{
+      const el=document.getElementById(id); if(el)globals[id]=el.value;
+    });
+    localStorage.setItem(LS_KEY, JSON.stringify({globals,legs,legSeq,activeTab}));
+  }catch(e){/* storage no disponible (preview sandbox) */}
+}
+function loadState(){
+  try{
+    const raw=localStorage.getItem(LS_KEY);
+    if(!raw)return false;
+    const d=JSON.parse(raw);
+    if(d.globals)Object.entries(d.globals).forEach(([id,v])=>{
+      const el=document.getElementById(id); if(el)el.value=v;
+    });
+    if(Array.isArray(d.legs)&&d.legs.length){
+      legs=d.legs;
+      legSeq=d.legSeq||legs.reduce((m,l)=>Math.max(m,l.id),0);
+    }
+    if(d.activeTab)activeTab=d.activeTab;
+    return true;
+  }catch(e){return false;}
+}
+
 const STEPS=Array.from({length:25},(_,i)=>-24+i*2);
 
 function pctStyle(s){
@@ -459,6 +489,7 @@ function newLeg(tipo,dir,strike,prima,lotes){
    MAIN CALC
 ════════════════════════════════════════════════════ */
 function calc(){
+  saveState();
   const S=pv('iS'),K=pv('iK'),dias=pv('iDias');
   const sig=pv('iSigma')/100,r=pv('iR')/100,q=pv('iQ')/100;
   const T=dias/365;
@@ -683,20 +714,22 @@ function addLeg(tipo,dir,strike,prima,lotes){
     lotes!=null?lotes:1
   ));
   renderLegs();
+  saveState();
   calcPayoff();
 }
 function removeLeg(id){
   legs=legs.filter(l=>l.id!==id);
   renderLegs();
+  saveState();
   calcPayoff();
 }
 function setLegTipo(id,t){
   const l=legs.find(x=>x.id===id); if(!l)return;
-  l.tipo=t; renderLegs(); calcPayoff();
+  l.tipo=t; renderLegs(); saveState(); calcPayoff();
 }
 function setLegDir(id,d){
   const l=legs.find(x=>x.id===id); if(!l)return;
-  l.dir=d; renderLegs(); calcPayoff();
+  l.dir=d; renderLegs(); saveState(); calcPayoff();
 }
 /* lee strike/prima/lotes desde el DOM y los sincroniza al state */
 function syncLeg(id){
@@ -705,6 +738,7 @@ function syncLeg(id){
   l.strike=parseFloat(gs(`leg-${id}-strike`));
   l.prima =parseFloat(gs(`leg-${id}-prima`));
   l.lotes =parseFloat(gs(`leg-${id}-lotes`));
+  saveState();
   calcPayoff();
 }
 
@@ -766,7 +800,7 @@ function applyPreset(i){
     legs.push(newLeg(tipo,dir,Math.round(strike),prima,lotes));
   });
   document.getElementById('presetMenu').style.display='none';
-  renderLegs(); calcPayoff();
+  renderLegs(); saveState(); calcPayoff();
 }
 
 /* ── STRATEGY CALC ── */
@@ -823,8 +857,8 @@ function calcPayoff(){
   let h=`<div class="po-th" style="grid-template-columns:${cols}">
     <div class="po-th-cell" style="text-align:center">%</div>
     <div class="po-th-cell">Spot</div>
-    <div class="po-th-cell" style="color:var(--blue)">MTM total</div>
     <div class="po-th-cell" style="color:var(--gold)">Venc.</div>
+    <div class="po-th-cell" style="color:var(--blue)">MTM total</div>
   </div>`;
 
   STEPS.forEach(step=>{
@@ -846,8 +880,8 @@ function calcPayoff(){
     h+=`<div class="po-tr" style="grid-template-columns:${cols};background:${base?'rgba(18,14,0,.85)':step<0?'rgba(14,8,8,.65)':'rgba(5,12,8,.65)'}">
       <div class="po-td c">${pctCell}</div>
       <div class="po-td r"><span class="nv ${base?'base':'dim'}" style="font-size:12px">${fmt(spot,0)}</span></div>
-      <div class="po-td r"><span class="nv" style="color:${mtmColor};font-size:12px">${mtmValid?fmtPnl(mtm):'—'}</span></div>
       <div class="po-td r"><span class="nv" style="color:${expColor};font-size:12px">${fmtPnl(exp)}</span></div>
+      <div class="po-td r"><span class="nv" style="color:${mtmColor};font-size:12px">${mtmValid?fmtPnl(mtm):'—'}</span></div>
     </div>`;
   });
   document.getElementById('poTable').innerHTML=h;
@@ -890,14 +924,22 @@ function switchTab(tab){
     document.getElementById('panel-'+t).classList.toggle('hidden',t!==tab);
     document.getElementById('tab-'+t).classList.toggle('active',t===tab);
   });
+  // En Payoff los strikes van por leg → ocultar Strike global y Div
+  const hide = tab==='payoff';
+  document.getElementById('ig-K').style.display = hide?'none':'';
+  document.getElementById('ig-q').style.display = hide?'none':'';
+  saveState();
 }
 
 /* ════════════════════════════════════════════════════
    INIT
 ════════════════════════════════════════════════════ */
-// Seed con un leg inicial (Long Call, strike = K, 4 lotes)
-legs.push(newLeg('call','long',70900,500,4));
+const restored=loadState();
+if(!restored || !legs.length){
+  legs=[newLeg('call','long',70900,500,4)];   // leg por defecto
+}
 renderLegs();
+switchTab(activeTab);   // restaura tab activa + visibilidad de inputs
 calc();
 </script>
 </body>
